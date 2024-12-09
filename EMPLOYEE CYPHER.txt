@@ -1,0 +1,23 @@
+EMPLOYEE CYPHER
+
+MATCH (e:Employee {name:'Darth Vader’})<-[:HAS_BOSS]-(r)
+RETURN *
+
+
+MATCH (e:Employee {name:'Darth Vader’})<-[:HAS_BOSS*1..2]-(r)
+RETURN *
+
+
+MATCH (e:Employee)
+WHERE NOT (e)<-[:HAS_BOSS]-()
+RETURN e.name
+
+
+MATCH (e:Employee {name:'Jacob'})<-[:HAS_BOSS]-(r)
+RETURN e,r
+
+
+MATCH (e:Employee {name:'Jacob'})<-[:HAS_BOSS]-(r)
+WHERE NOT (r)-[:IS_FRIENDS_WITH]->(e)
+return e,r
+

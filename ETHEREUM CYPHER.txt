@@ -1,0 +1,29 @@
+ETHEREUM CYPHER :
+
+CREATE INDEX wallet_address_index FOR (w:Wallet) ON (w.address);
+
+LOAD CSV FROM 'file:///list-wallet.csv' AS row
+MERGE (f:Wallet {address: row[0]})
+
+LOAD CSV FROM 'file:///transactions-full.csv' AS row
+MATCH (f:Wallet {address: row[0]})
+MATCH (d:Wallet {address: row[1]})
+MERGE (f)-[:HAS_TRANSFERRED {timestamp: toInteger(row[2]), value: toFloat(row[3])}]->(d)
+
+
+MATCH (s:Wallet)-[r:HAS_TRANSFERRED]->(d:Wallet)
+WHERE r.value > 1
+RETURN *
+
+
+MATCH (s:Wallet)-[r:HAS_TRANSFERRED]->(d:Wallet)
+WITH d, SUM(r.value) AS Total
+RETURN d.address AS Wallet_Address, Total
+ORDER BY Total DESC
+LIMIT 10;
+
+
+MATCH (s:Wallet)-[r:HAS_TRANSFERRED]->(d:Wallet {address:'0x28c6c06298d514db089934071355e5743bf21d60'})
+with COUNT( distinct s.address) as sTotal 
+return sTotal
+
